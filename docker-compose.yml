@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:  # PostgreSQL Veritabanı
+  database:
+    image: postgres:17.2
+    container_name: pratik_db
+    environment:
+      POSTGRES_DB: pratik
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: devbros123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - pratik_network
+
+  # Backend API
+  backend:
+    build: 
+      context: ./b
+      dockerfile: Dockerfile
+    container_name: pratik_backend    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://postgres:devbros123@database:5432/pratik
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - database
+    restart: unless-stopped
+    networks:
+      - pratik_network
+
+  # Frontend
+  frontend:
+    build:
+      context: ./f
+      dockerfile: Dockerfile
+    container_name: pratik_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - pratik_network
+
+volumes:
+  postgres_data:
+
+networks:
+  pratik_network:
+    driver: bridge
