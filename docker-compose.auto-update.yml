@@ -1,0 +1,28 @@
+services:
+  # Git otomatik pull servisi
+  auto-update:
+    image: alpine/git
+    container_name: auto_updater
+    volumes:
+      - .:/repo
+      - /var/run/docker.sock:/var/run/docker.sock
+    working_dir: /repo
+    command: |
+      sh -c '
+        while true; do
+          echo "Git kontrolü yapılıyor..."
+          git fetch origin main
+          LOCAL=$$(git rev-parse HEAD)
+          REMOTE=$$(git rev-parse @{u})
+          if [ "$$LOCAL" != "$$REMOTE" ]; then
+            echo "Yeni güncellemeler bulundu, çekiliyor..."
+            git pull origin main
+            echo "Container'lar yeniden başlatılıyor..."
+            docker compose restart backend frontend
+          fi
+          sleep 300  # 5 dakikada bir kontrol et
+        done
+      '
+    restart: unless-stopped
+    networks:
+      - pratik_network

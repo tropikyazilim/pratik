@@ -1,4 +1,17 @@
 services:
+  # Git güncellemelerini otomatik çek
+  git-pull:
+    image: alpine/git
+    container_name: git_puller
+    volumes:
+      - .:/repo
+    working_dir: /repo
+    environment:
+      - GIT_REPO_URL=https://github.com/tropikyazilim/pratik.git
+    command: sh -c "git remote set-url origin $${GIT_REPO_URL} && git pull origin main && echo 'Git güncellemeleri çekildi'"
+    networks:
+      - pratik_network
+
   database:
     build:
       context: ./postgres
