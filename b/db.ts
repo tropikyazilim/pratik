@@ -22,6 +22,35 @@ const envPath = path.join(__dirname, process.env.NODE_ENV === 'production' ? '.e
 dotenv.config({ path: envPath });
 console.log(`[${new Date().toISOString()}] ${process.env.NODE_ENV || 'development'} ortamı için yapılandırma yüklendi: ${envPath}`);
 
+// Database configuration helper function
+function getDatabaseConfig() {
+  // First try individual environment variables
+  if (process.env.DB_HOST && process.env.DB_USER && process.env.DB_PASSWORD && process.env.DB_NAME) {
+    return {
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 5432,
+    };
+  }
+  
+  // Fallback to DATABASE_URL if available
+  if (process.env.DATABASE_URL) {
+    const url = new URL(process.env.DATABASE_URL);
+    return {
+      host: url.hostname,
+      user: url.username,
+      password: url.password,
+      database: url.pathname.slice(1), // Remove leading slash
+      port: url.port ? parseInt(url.port) : 5432,
+    };
+  }
+  
+  // Default fallback (should not happen in production)
+  throw new Error('No database configuration found. Set either DB_HOST, DB_USER, DB_PASSWORD, DB_NAME or DATABASE_URL');
+}
+
 // Veritabanı bağlantı durumu
 let dbState: DbState = {
   db: null,
@@ -30,14 +59,17 @@ let dbState: DbState = {
   lastConnectionTime: null
 };
 
-// Tüm PostgreSQL bağlantılarını temizlemek için pool
-const pgPool = new pg.Pool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : undefined,
+// Get database config
+const dbConfig = getDatabaseConfig();
+console.log(`[${new Date().toISOString()}] Database config loaded:`, {
+  host: dbConfig.host,
+  user: dbConfig.user,
+  database: dbConfig.database,
+  port: dbConfig.port
 });
+
+// Tüm PostgreSQL bağlantılarını temizlemek için pool
+const pgPool = new pg.Pool(dbConfig);
 
 /**
  * Kullanıcı adına göre veritabanı adını günceller ve tüm bağlantıları sıfırlar
@@ -162,14 +194,8 @@ export async function resetAllConnections(): Promise<void> {
  */
 export async function createConnection(): Promise<pg.Client> {
   try {
-    // Veritabanı bağlantı bilgileri
-    const dbConfig = {
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : undefined,
-    };
+    // Get database config (using the same helper function)
+    const dbConfig = getDatabaseConfig();
     
     console.log(`[${new Date().toISOString()}] ${process.env.NODE_ENV || 'development'} ortamında veritabanına bağlanılıyor:`, {
       host: dbConfig.host,
@@ -179,13 +205,7 @@ export async function createConnection(): Promise<pg.Client> {
     });
 
     // Veritabanı bağlantı nesnesi
-    const client = new pg.Client({
-      host: dbConfig.host,
-      user: dbConfig.user,
-      password: dbConfig.password,
-      database: dbConfig.database,
-      port: dbConfig.port,
-    });
+    const client = new pg.Client(dbConfig);
 
     // Veritabanına bağlanma (await ile bekle)
     await client.connect();

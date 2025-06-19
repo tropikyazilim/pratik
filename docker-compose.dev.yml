@@ -1,0 +1,49 @@
+services:
+  backend:
+    build: 
+      context: ./b
+      dockerfile: Dockerfile
+    container_name: pratik_backend_dev
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://postgres:devbros123@database:5432/pratik
+      PORT: 3002
+      DB_HOST: database
+      DB_USER: postgres
+      DB_PASSWORD: devbros123
+      DB_NAME: pratik
+      DB_PORT: 5432
+      CORS_ORIGIN: http://localhost:5173
+    ports:
+      - "3002:3002"
+    volumes:
+      - ./b:/app
+      - /app/node_modules
+    command: npm run dev
+    depends_on:
+      - database
+    networks:
+      - pratik_network
+
+  database:
+    build:
+      context: ./postgres
+      dockerfile: Dockerfile
+    container_name: pratik_db_dev
+    environment:
+      POSTGRES_DB: pratik
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: devbros123
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - pratik_network
+
+volumes:
+  postgres_data_dev:
+
+networks:
+  pratik_network:
+    driver: bridge

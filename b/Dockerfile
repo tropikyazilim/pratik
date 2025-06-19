@@ -29,9 +29,5 @@ RUN npm prune --production
 # Port expose et
 EXPOSE 3000
 
-# Health check ekle
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node healthcheck.js
-
 # Production modunda başlat
 CMD ["npm", "run", "start:prod"]

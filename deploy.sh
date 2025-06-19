@@ -1,7 +1,13 @@
 #!/bin/bash
 
-# VPS Deploy Scripti
-# Bu scripti VPS'de çalıştırın
+# VPS Deploy Scripecho "✅ Deploy tamamlandı!"
+echo ""
+echo "🌐 Erişim adresleri:"
+echo "Frontend: https://pratik.volkankok.dev"
+echo "Backend API: https://pratik.volkankok.dev/api"
+echo ""
+echo "📊 Logları izlemek için:"
+echo "docker compose logs -f"scripti VPS'de çalıştırın
 
 echo "🚀 VPS'de Deploy işlemi başlatılıyor..."
 
