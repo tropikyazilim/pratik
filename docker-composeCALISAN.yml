@@ -1,61 +1,64 @@
 services:
   database:
-    build:
-      context: ./postgres
-      dockerfile: Dockerfile
-    container_name: ${MUSTERI_ADI}_db
+    image: postgres:17.2
+    container_name: pratik_db
     environment:
-      POSTGRES_DB: ${MUSTERI_ADI}
+      POSTGRES_DB: pratik
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${MUSTERI_POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: devbros123
+      POSTGRES_INITDB_ARGS: '--encoding=UTF8 --lc-collate=en_US.UTF-8 --lc-ctype=en_US.UTF-8'
+      LANG: en_US.UTF-8
+      LC_ALL: en_US.UTF-8
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "${MUSTERI_DB_PORT}:5432"
+      - "5433:5432"
     restart: unless-stopped
+    networks:
+      - pratik_network
 
   backend:
     build: 
       context: ./b
       dockerfile: Dockerfile
-    container_name: ${MUSTERI_ADI}_backend
+    container_name: pratik_backend
     environment:
       NODE_ENV: production
-      DATABASE_URL: postgresql://postgres:${MUSTERI_POSTGRES_PASSWORD}@database:5432/${MUSTERI_ADI}
+      DATABASE_URL: postgresql://postgres:devbros123@database:5432/pratik
       PORT: 3000
       DB_HOST: database
       DB_USER: postgres
-      DB_PASSWORD: ${MUSTERI_POSTGRES_PASSWORD}
-      DB_NAME: ${MUSTERI_ADI}
+      DB_PASSWORD: devbros123
+      DB_NAME: pratik
       DB_PORT: 5432
-      CORS_ORIGIN: https://${MUSTERI_ADI}.${MUSTERI_DOMAIN}
+      CORS_ORIGIN: https://pratik.volkankok.dev
     expose:
       - "3000"
     depends_on:
       - database
     restart: unless-stopped
+    networks:
+      - pratik_network
 
   frontend:
     build:
       context: ./f
       dockerfile: Dockerfile
-    container_name: ${MUSTERI_ADI}_frontend
+    container_name: pratik_frontend
     expose:
       - "80"
     depends_on:
       - backend
     restart: unless-stopped
+    networks:
+      - pratik_network
 
   nginx:
     image: nginx:alpine
-    container_name: ${MUSTERI_ADI}_nginx
-    environment:
-      - BACKEND_HOST=${MUSTERI_ADI}_backend
-      - FRONTEND_HOST=${MUSTERI_ADI}_frontend
-      - DOMAIN=${MUSTERI_ADI}.${MUSTERI_DOMAIN}
+    container_name: pratik_nginx
     ports:
-      - "${MUSTERI_NGINX_HTTP_PORT}:80"
-      - "${MUSTERI_NGINX_HTTPS_PORT}:443"
+      - "9080:80"
+      - "9443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/sites-available:/etc/nginx/sites-available:ro
@@ -64,10 +67,12 @@ services:
       - frontend
       - backend
     restart: unless-stopped
+    networks:
+      - pratik_network
 
 volumes:
   postgres_data:
 
 networks:
-  default:
+  pratik_network:
     driver: bridge

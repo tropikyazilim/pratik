@@ -3,6 +3,8 @@ services:
     build:
       context: ./postgres
       dockerfile: Dockerfile
+    env_file:
+      - .env
     container_name: ${MUSTERI_ADI}_db
     environment:
       POSTGRES_DB: ${MUSTERI_ADI}
@@ -13,11 +15,15 @@ services:
     ports:
       - "${MUSTERI_DB_PORT}:5432"
     restart: unless-stopped
+    networks:
+      - ${MUSTERI_ADI}_network
 
   backend:
     build: 
       context: ./b
       dockerfile: Dockerfile
+    env_file:
+      - .env
     container_name: ${MUSTERI_ADI}_backend
     environment:
       NODE_ENV: production
@@ -34,25 +40,27 @@ services:
     depends_on:
       - database
     restart: unless-stopped
+    networks:
+      - ${MUSTERI_ADI}_network
 
   frontend:
     build:
       context: ./f
       dockerfile: Dockerfile
+    env_file:
+      - .env
     container_name: ${MUSTERI_ADI}_frontend
     expose:
       - "80"
     depends_on:
       - backend
     restart: unless-stopped
+    networks:
+      - ${MUSTERI_ADI}_network
 
   nginx:
     image: nginx:alpine
     container_name: ${MUSTERI_ADI}_nginx
-    environment:
-      - BACKEND_HOST=${MUSTERI_ADI}_backend
-      - FRONTEND_HOST=${MUSTERI_ADI}_frontend
-      - DOMAIN=${MUSTERI_ADI}.${MUSTERI_DOMAIN}
     ports:
       - "${MUSTERI_NGINX_HTTP_PORT}:80"
       - "${MUSTERI_NGINX_HTTPS_PORT}:443"
@@ -64,10 +72,12 @@ services:
       - frontend
       - backend
     restart: unless-stopped
+    networks:
+      - ${MUSTERI_ADI}_network
 
 volumes:
   postgres_data:
 
 networks:
-  default:
+  ${MUSTERI_ADI}_network:
     driver: bridge
