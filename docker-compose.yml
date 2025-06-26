@@ -1,0 +1,74 @@
+services:
+  database:
+    build:
+      context: ./postgres
+      dockerfile: Dockerfile
+    container_name: ${MUSTERI_ADI}_db
+    environment:
+      POSTGRES_DB: ${MUSTERI_ADI}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${MUSTERI_POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${MUSTERI_DB_PORT}:5432"
+    restart: unless-stopped
+
+  backend:
+    build: 
+      context: ./b
+      dockerfile: Dockerfile
+    container_name: ${MUSTERI_ADI}_backend
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://postgres:${MUSTERI_POSTGRES_PASSWORD}@database:5432/${MUSTERI_ADI}
+      PORT: 3000
+      DB_HOST: database
+      DB_USER: postgres
+      DB_PASSWORD: ${MUSTERI_POSTGRES_PASSWORD}
+      DB_NAME: ${MUSTERI_ADI}
+      DB_PORT: 5432
+      CORS_ORIGIN: https://${MUSTERI_ADI}.${MUSTERI_DOMAIN}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - database
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./f
+      dockerfile: Dockerfile
+    container_name: ${MUSTERI_ADI}_frontend
+    expose:
+      - "80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: ${MUSTERI_ADI}_nginx
+    environment:
+      - BACKEND_HOST=${MUSTERI_ADI}_backend
+      - FRONTEND_HOST=${MUSTERI_ADI}_frontend
+      - DOMAIN=${MUSTERI_ADI}.${MUSTERI_DOMAIN}
+    ports:
+      - "${MUSTERI_NGINX_HTTP_PORT}:80"
+      - "${MUSTERI_NGINX_HTTPS_PORT}:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/sites-available:/etc/nginx/sites-available:ro
+      - ./nginx/sites-available/${MUSTERI_ADI}.conf:/etc/nginx/conf.d/default.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - frontend
+      - backend
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  default:
+    driver: bridge
