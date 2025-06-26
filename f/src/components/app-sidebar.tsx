@@ -1,8 +1,10 @@
 import * as React from "react"
 import { GalleryVerticalEnd, Minus, Plus } from "lucide-react"
+import { useEffect, useState } from "react"
 
 import { SearchForm } from "@/components/search-form"
 import { NavLink } from "react-router";
+import { NavUser } from "@/components/nav-user"
 import {
   Collapsible,
   CollapsibleContent,
@@ -14,6 +16,7 @@ import {
   SidebarGroup,
   SidebarHeader,
   SidebarMenu,
+  SidebarFooter,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
@@ -22,148 +25,173 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 
-// This is sample data.
-const data = {
-  navMain: [
-    {
-      title: "Stok Modülü",
-      url: "#",
-      items: [
-        {
-          title: "Installation",
-          url: "#",
-        },
-        {
-          title: "Project Structure",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Cari Modülü",
-      url: "#",
-      items: [
-        {
-          title: "Cari Ekle",
-          url: "cariekle",
-        },
-        {
-          title: "Data Fetching",
-          url: "#",
-          isActive: true,
-        },
-        {
-          title: "Rendering",
-          url: "#",
-        },
-        {
-          title: "Caching",
-          url: "#",
-        },
-        {
-          title: "Styling",
-          url: "#",
-        },
-        {
-          title: "Optimizing",
-          url: "#",
-        },
-        {
-          title: "Configuring",
-          url: "#",
-        },
-        {
-          title: "Testing",
-          url: "#",
-        },
-        {
-          title: "Authentication",
-          url: "#",
-        },
-        {
-          title: "Deploying",
-          url: "#",
-        },
-        {
-          title: "Upgrading",
-          url: "#",
-        },
-        {
-          title: "Examples",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Kasa Modülü",
-      url: "#",
-      items: [
-        {
-          title: "Components",
-          url: "#",
-        },
-        {
-          title: "File Conventions",
-          url: "#",
-        },
-        {
-          title: "Functions",
-          url: "#",
-        },
-        {
-          title: "next.config.js Options",
-          url: "#",
-        },
-        {
-          title: "CLI",
-          url: "#",
-        },
-        {
-          title: "Edge Runtime",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Fatura Modülü",
-      url: "#",
-      items: [
-        {
-          title: "Accessibility",
-          url: "#",
-        },
-        {
-          title: "Fast Refresh",
-          url: "#",
-        },
-        {
-          title: "Next.js Compiler",
-          url: "#",
-        },
-        {
-          title: "Supported Browsers",
-          url: "#",
-        },
-        {
-          title: "Turbopack",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Ayarlar",
-      url: "#",
-      items: [
-        {
-          title: "Contribution Guide",
-          url: "#",
-        },
-      ],
-    },
-  ],
-}
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const [userEmail, setUserEmail] = useState(
+    typeof window !== "undefined" && localStorage.getItem("userEmail")
+      ? localStorage.getItem("userEmail")
+      : "m@example.com"
+  );
+  const [userName, setUserName] = useState(
+    typeof window !== "undefined" && localStorage.getItem("username")
+      ? localStorage.getItem("username")
+      : "shadcn"
+  );
+
+  useEffect(() => {
+    const onStorage = () => {
+      setUserEmail(localStorage.getItem("userEmail") || "m@example.com");
+      setUserName(localStorage.getItem("username") || "shadcn");
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
+
+  // This is sample data.
+  const data = {
+    user: {
+      name: userName || "shadcn",
+      email: userEmail || "m@example.com",
+      avatar: "/avatars/logo.jpg",
+    },
+    navMain: [
+      {
+        title: "Stok Modülü",
+        url: "#",
+        items: [
+          {
+            title: "Installation",
+            url: "#",
+          },
+          {
+            title: "Project Structure",
+            url: "#",
+          },
+        ],
+      },
+      {
+        title: "Cari Modülü",
+        url: "#",
+        items: [
+          {
+            title: "Cari Ekle",
+            url: "cariekle",
+          },
+          {
+            title: "Data Fetching",
+            url: "#",
+            isActive: true,
+          },
+          {
+            title: "Rendering",
+            url: "#",
+          },
+          {
+            title: "Caching",
+            url: "#",
+          },
+          {
+            title: "Styling",
+            url: "#",
+          },
+          {
+            title: "Optimizing",
+            url: "#",
+          },
+          {
+            title: "Configuring",
+            url: "#",
+          },
+          {
+            title: "Testing",
+            url: "#",
+          },
+          {
+            title: "Authentication",
+            url: "#",
+          },
+          {
+            title: "Deploying",
+            url: "#",
+          },
+          {
+            title: "Upgrading",
+            url: "#",
+          },
+          {
+            title: "Examples",
+            url: "#",
+          },
+        ],
+      },
+      {
+        title: "Kasa Modülü",
+        url: "#",
+        items: [
+          {
+            title: "Components",
+            url: "#",
+          },
+          {
+            title: "File Conventions",
+            url: "#",
+          },
+          {
+            title: "Functions",
+            url: "#",
+          },
+          {
+            title: "next.config.js Options",
+            url: "#",
+          },
+          {
+            title: "CLI",
+            url: "#",
+          },
+          {
+            title: "Edge Runtime",
+            url: "#",
+          },
+        ],
+      },
+      {
+        title: "Fatura Modülü",
+        url: "#",
+        items: [
+          {
+            title: "Accessibility",
+            url: "#",
+          },
+          {
+            title: "Fast Refresh",
+            url: "#",
+          },
+          {
+            title: "Next.js Compiler",
+            url: "#",
+          },
+          {
+            title: "Supported Browsers",
+            url: "#",
+          },
+          {
+            title: "Turbopack",
+            url: "#",
+          },
+        ],
+      },
+      {
+        title: "Ayarlar",
+        url: "#",
+        items: [
+          {
+            title: "Contribution Guide",
+            url: "#",
+          },
+        ],
+      },
+    ],
+  }
+
   return (
     <Sidebar {...props}>
       <SidebarHeader>
@@ -223,6 +251,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <NavUser user={data.user} />
+      </SidebarFooter>
       <SidebarRail />
       <div style={{padding: 16}}>
         <button

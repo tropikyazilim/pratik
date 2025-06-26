@@ -32,6 +32,7 @@ export function LoginForm({
       }
       localStorage.setItem("accessToken", data.accessToken);
       localStorage.setItem("userEmail", email);
+      localStorage.setItem("username", data.username);
       navigate("/");
     } catch (err) {
       setError("Sunucu hatası");

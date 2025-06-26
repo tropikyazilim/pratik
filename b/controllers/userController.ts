@@ -46,7 +46,7 @@ export async function login(req: Request, res: Response) {
       maxAge: 30 * 24 * 60 * 60 * 1000 // 30 gün
     });
     // Access token'ı JSON ile gönder
-    return res.json({ accessToken });
+    return res.json({ accessToken, username: user.username });
   } catch (err) {
     const error = err as Error;
     return res.status(500).json({ message: 'Sunucu hatası', error: error.message });
