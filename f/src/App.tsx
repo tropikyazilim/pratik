@@ -1,6 +1,7 @@
 import "./App.css";
 
 import { createBrowserRouter, RouterProvider } from "react-router";
+import { AuthProvider } from "@/context/auth-context";
 
 import Root from "./pages/Root";
 import Dashboard from "./pages/Dashboard";
@@ -29,11 +30,12 @@ const router = createBrowserRouter([
   },
 ]);
 
+
 function App() {
   return (
-    
+    <AuthProvider>
       <RouterProvider router={router} />
-    
+    </AuthProvider>
   );
 }
 

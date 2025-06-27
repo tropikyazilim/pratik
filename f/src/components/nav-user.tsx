@@ -1,5 +1,7 @@
 "use client"
 
+import { NavLink } from "react-router-dom";
+import { useAuth } from "@/context/auth-context";
 import {
   BadgeCheck,
   Bell,
@@ -40,6 +42,7 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const { logout } = useAuth();
 
   return (
     <SidebarMenu>
@@ -102,9 +105,14 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <LogOut />
-              Log out
+            <DropdownMenuItem
+              onClick={logout}
+              asChild
+            >
+              <NavLink to="/login">
+                <LogOut />
+                Log out
+              </NavLink>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

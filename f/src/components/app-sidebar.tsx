@@ -255,17 +255,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavUser user={data.user} />
       </SidebarFooter>
       <SidebarRail />
-      <div style={{padding: 16}}>
-        <button
-          onClick={() => {
-            localStorage.removeItem('accessToken');
-            window.location.href = '/login';
-          }}
-          style={{width: '100%', padding: '8px 0', background: '#e53e3e', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer'}}
-        >
-          Çıkış Yap
-        </button>
-      </div>
     </Sidebar>
   )
 }
