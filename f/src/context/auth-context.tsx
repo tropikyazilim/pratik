@@ -25,6 +25,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = () => {
     setAccessToken(null);
     setUser(null);
+    // Tema class'larını temizle
+    document.documentElement.classList.remove("dark", "light");
+    // localStorage'dan tema bilgisini sil
+    localStorage.removeItem("theme");
     // Çıkışta backend'e refreshToken silinsin diye istek atılabilir
     fetch("/api/logout", { method: "POST", credentials: "include" });
   };
