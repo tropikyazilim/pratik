@@ -1,9 +1,45 @@
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// declare module 'bcrypt';
+
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { getCustomDbConnection } from '../db.js';
+import bcrypt from 'bcrypt';
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || 'access_secret';
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || 'refresh_secret';
+
+export async function register(req: Request, res: Response) {
+  const { email, username, password } = req.body;
+  if (!email || !username || !password) {
+    return res.status(400).json({ message: 'Tüm alanlar zorunlu.' });
+  }
+  try {
+    const db = await getCustomDbConnection('tropik');
+    if (!db) {
+      return res.status(503).json({ message: 'Veritabanı bağlantısı yok.' });
+    }
+    // E-posta zaten var mı kontrol et
+    const check = await db.query('SELECT id FROM users WHERE email = $1', [email]);
+    if (check.rows.length > 0) {
+      await db.end();
+      return res.status(409).json({ message: 'Bu e-posta ile kayıtlı kullanıcı zaten var.' });
+    }
+    // Şifreyi hashle
+    const hashedPassword = await bcrypt.hash(password, 10);
+    // Kaydı ekle
+    const now = new Date();
+    const result = await db.query(
+      'INSERT INTO users (email, username, password, created_at, updated_at) VALUES ($1, $2, $3, $4, $5) RETURNING id, email, username',
+      [email, username, hashedPassword, now, now]
+    );
+    await db.end();
+    return res.status(201).json({ message: 'Kullanıcı başarıyla oluşturuldu.', user: result.rows[0] });
+  } catch (err) {
+    const error = err as Error;
+    return res.status(500).json({ message: 'Sunucu hatası', error: error.message });
+  }
+}
 
 export async function login(req: Request, res: Response) {
   const { email, password } = req.body;
@@ -17,12 +53,18 @@ export async function login(req: Request, res: Response) {
       return res.status(503).json({ message: 'Veritabanı bağlantısı yok.' });
     }
     const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+    console.log('Kullanıcı sorgu sonucu:', result.rows);
     if (result.rows.length === 0) {
       await db.end();
       return res.status(401).json({ message: 'Geçersiz e-mail veya şifre.' });
     }
     const user = result.rows[0];
-    if (user.password !== password) {
+    // Şifreyi bcrypt ile karşılaştır
+    console.log('Şifre:', password);
+    console.log('Hash:', user.password);
+    const isMatch = await bcrypt.compare(password, user.password);
+    console.log('Karşılaştırma sonucu:', isMatch);
+    if (!isMatch) {
       await db.end();
       return res.status(401).json({ message: 'Geçersiz e-mail veya şifre.' });
     }

@@ -7,6 +7,7 @@ import Root from "./pages/Root";
 import Dashboard from "./pages/Dashboard";
 import CariEkle from "./pages/Cari/CariEkle";
 import Login from "./pages/Login";
+import { KullaniciEkle } from "./pages/Kullanicilar";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
         children: [
           { path: "", element: <Dashboard /> },
           { path: "cariekle", element: <CariEkle /> },
+          { path: "kullaniciekle", element: <KullaniciEkle /> },
         ],
       },
     ],

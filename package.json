@@ -1,5 +1,8 @@
 {
   "dependencies": {
     "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2"
   }
 }

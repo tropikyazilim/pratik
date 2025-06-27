@@ -44,7 +44,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       url: "#",
       items: [
         { title: "Cari Ekle", url: "cariekle" },
-        { title: "Data Fetching", url: "#", isActive: true },
+        { title: "Kullanıcı Ekle", url: "kullaniciekle"},
         { title: "Rendering", url: "#" },
         { title: "Caching", url: "#" },
         { title: "Styling", url: "#" },
