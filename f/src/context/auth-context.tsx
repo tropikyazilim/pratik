@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
+import { useTheme } from "@/context/theme-context";
 
 export type UserType = {
   id: number;
@@ -21,6 +22,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [user, setUser] = useState<UserType | null>(null);
+  const { resetTheme } = useTheme();
 
   const logout = () => {
     setAccessToken(null);
@@ -29,6 +31,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     document.documentElement.classList.remove("dark", "light");
     // localStorage'dan tema bilgisini sil
     localStorage.removeItem("theme");
+    resetTheme();
     // Çıkışta backend'e refreshToken silinsin diye istek atılabilir
     fetch("/api/logout", { method: "POST", credentials: "include" });
   };
