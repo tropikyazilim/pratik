@@ -1,20 +1,41 @@
 import React, { createContext, useContext, useState } from "react";
 
+export type UserType = {
+  id: number;
+  email: string;
+  username: string;
+};
+
 export type AuthContextType = {
   accessToken: string | null;
   setAccessToken: (token: string | null) => void;
   logout: () => void;
+  initialize: (token: string | null, user?: UserType | null) => void;
+  user: UserType | null;
+  setUser: (user: UserType | null) => void;
+  // refreshAccessToken fonksiyonu burada tanımlanabilir
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [user, setUser] = useState<UserType | null>(null);
 
-  const logout = () => setAccessToken(null);
+  const logout = () => {
+    setAccessToken(null);
+    setUser(null);
+    // Çıkışta backend'e refreshToken silinsin diye istek atılabilir
+    fetch("/api/logout", { method: "POST", credentials: "include" });
+  };
+
+  const initialize = (token: string | null, userObj?: UserType | null) => {
+    setAccessToken(token);
+    if (userObj) setUser(userObj);
+  };
 
   return (
-    <AuthContext.Provider value={{ accessToken, setAccessToken, logout }}>
+    <AuthContext.Provider value={{ accessToken, setAccessToken, logout, initialize, user, setUser }}>
       {children}
     </AuthContext.Provider>
   );

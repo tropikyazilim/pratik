@@ -150,10 +150,7 @@ export function NavUser({
               <DropdownMenuItem
                 asChild
                 onClick={() => {
-                  localStorage.removeItem("accessToken");
-                  localStorage.removeItem("userEmail");
-                  localStorage.removeItem("userName");
-                  
+                  logout();
                 }}
               >
                 <NavLink to="/login">

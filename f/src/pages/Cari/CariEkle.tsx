@@ -16,7 +16,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import { useAuth } from "@/context/auth-context";
+
 interface ApiError {
   message: string;
 }
@@ -25,12 +26,11 @@ const formSchema = z.object({
   modul_kodu: z.string().min(1, "Modül kodu gerekli"),
   modul_adi: z.string().min(1, "Modül adı gerekli"),
   modul_aciklama: z.string().min(1, "Modül açıklaması gerekli"),
-  kayit_yapan_kullanici: z.string().optional(),
 });
 
 export default function CariEkle() {
-  const [error, setError] = useState(null);
   const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3002";
+  const { accessToken } = useAuth();
   console.log("Kullanılan API URL:", apiUrl);
 
   const form = useForm({
@@ -43,10 +43,13 @@ export default function CariEkle() {
   });
   const createModulMutation = useMutation({
     mutationFn: (ModulData: z.infer<typeof formSchema>) => {
-      return axios.post(`${apiUrl}/api/moduller`, ModulData);
+      return axios.post(
+        `${apiUrl}/api/moduller`,
+        ModulData,
+        accessToken ? { headers: { Authorization: `Bearer ${accessToken}` }, withCredentials: true } : { withCredentials: true }
+      );
     },
     onSuccess: () => {
-      setError(null);
       form.reset();
       // Modüller listesini güncelle
 
@@ -69,17 +72,12 @@ export default function CariEkle() {
           color: "#991b1b",
         },
       });
-      setError(null);
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Kullanıcı bilgisini localStorage'dan al
-    const kayitYapanKullanici = localStorage.getItem("userEmail") || "";
-    setError(null);
     createModulMutation.mutate({
-      ...values,
-      kayit_yapan_kullanici: kayitYapanKullanici,
+      ...values
     });
   }
 

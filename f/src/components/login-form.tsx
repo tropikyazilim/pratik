@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useAuth } from "@/context/auth-context";
 
 export function LoginForm({
   className,
@@ -14,6 +15,7 @@ export function LoginForm({
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { initialize } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,9 +32,7 @@ export function LoginForm({
         setError(data.message || "Giriş başarısız");
         return;
       }
-      localStorage.setItem("accessToken", data.accessToken);
-      localStorage.setItem("userEmail", email);
-      localStorage.setItem("username", data.username);
+      initialize(data.accessToken);
       navigate("/");
     } catch (err) {
       setError("Sunucu hatası");

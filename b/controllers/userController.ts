@@ -51,4 +51,37 @@ export async function login(req: Request, res: Response) {
     const error = err as Error;
     return res.status(500).json({ message: 'Sunucu hatası', error: error.message });
   }
+}
+
+export async function getProfile(req: Request, res: Response) {
+  // req.user middleware'den gelmeli
+  const userReq = req as any;
+  if (!userReq.user || !userReq.user.email) {
+    return res.status(401).json({ message: 'Kullanıcı doğrulanamadı' });
+  }
+  try {
+    const db = await getCustomDbConnection('tropik');
+    if (!db) {
+      return res.status(503).json({ message: 'Veritabanı bağlantısı yok.' });
+    }
+    const result = await db.query('SELECT id, email, username FROM users WHERE email = $1', [userReq.user.email]);
+    await db.end();
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Kullanıcı bulunamadı' });
+    }
+    const user = result.rows[0];
+    return res.json(user);
+  } catch (err) {
+    const error = err as Error;
+    return res.status(500).json({ message: 'Sunucu hatası', error: error.message });
+  }
+}
+
+export async function logout(req: Request, res: Response) {
+  res.clearCookie('refreshToken', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+  });
+  res.json({ message: 'Çıkış başarılı' });
 } 

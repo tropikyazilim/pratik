@@ -1,11 +1,10 @@
 import * as React from "react"
+import { useEffect } from "react"
 import { GalleryVerticalEnd, Minus, Plus } from "lucide-react"
-import { useEffect, useState } from "react"
-
-import { SearchForm } from "@/components/search-form"
 import { NavLink } from "react-router";
 import { NavUser } from "@/components/nav-user"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { SearchForm } from "@/components/search-form"
 import {
   Collapsible,
   CollapsibleContent,
@@ -25,173 +24,90 @@ import {
   SidebarMenuSubItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import { useAuth } from "@/context/auth-context";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [userEmail, setUserEmail] = useState(
-    typeof window !== "undefined" && localStorage.getItem("userEmail")
-      ? localStorage.getItem("userEmail")
-      : "m@example.com"
-  );
-  const [userName, setUserName] = useState(
-    typeof window !== "undefined" && localStorage.getItem("username")
-      ? localStorage.getItem("username")
-      : "shadcn"
-  );
+  const { accessToken, user, setUser } = useAuth();
+
+  // Menü verisi sabit olarak tekrar eklendi
+  const navMain = [
+    {
+      title: "Stok Modülü",
+      url: "#",
+      items: [
+        { title: "Installation", url: "#" },
+        { title: "Project Structure", url: "#" },
+      ],
+    },
+    {
+      title: "Cari Modülü",
+      url: "#",
+      items: [
+        { title: "Cari Ekle", url: "cariekle" },
+        { title: "Data Fetching", url: "#", isActive: true },
+        { title: "Rendering", url: "#" },
+        { title: "Caching", url: "#" },
+        { title: "Styling", url: "#" },
+        { title: "Optimizing", url: "#" },
+        { title: "Configuring", url: "#" },
+        { title: "Testing", url: "#" },
+        { title: "Authentication", url: "#" },
+        { title: "Deploying", url: "#" },
+        { title: "Upgrading", url: "#" },
+        { title: "Examples", url: "#" },
+      ],
+    },
+    {
+      title: "Kasa Modülü",
+      url: "#",
+      items: [
+        { title: "Components", url: "#" },
+        { title: "File Conventions", url: "#" },
+        { title: "Functions", url: "#" },
+        { title: "next.config.js Options", url: "#" },
+        { title: "CLI", url: "#" },
+        { title: "Edge Runtime", url: "#" },
+      ],
+    },
+    {
+      title: "Fatura Modülü",
+      url: "#",
+      items: [
+        { title: "Accessibility", url: "#" },
+        { title: "Fast Refresh", url: "#" },
+        { title: "Next.js Compiler", url: "#" },
+        { title: "Supported Browsers", url: "#" },
+        { title: "Turbopack", url: "#" },
+      ],
+    },
+    {
+      title: "Ayarlar",
+      url: "#",
+      items: [
+        { title: "Contribution Guide", url: "#" },
+      ],
+    },
+  ];
 
   useEffect(() => {
-    const onStorage = () => {
-      setUserEmail(localStorage.getItem("userEmail") || "m@example.com");
-      setUserName(localStorage.getItem("username") || "shadcn");
+    const fetchProfile = async () => {
+      if (accessToken && !user) {
+        try {
+          const res = await fetch("/api/profile", {
+            headers: { Authorization: `Bearer ${accessToken}` },
+            credentials: "include"
+          });
+          if (res.ok) {
+            const data = await res.json();
+            setUser(data);
+          }
+        } catch (e) {
+          // Hata yönetimi
+        }
+      }
     };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
-
-  // This is sample data.
-  const data = {
-    user: {
-      name: userName || "shadcn",
-      email: userEmail || "m@example.com",
-      avatar: "/avatars/logo.jpg",
-    },
-    navMain: [
-      {
-        title: "Stok Modülü",
-        url: "#",
-        items: [
-          {
-            title: "Installation",
-            url: "#",
-          },
-          {
-            title: "Project Structure",
-            url: "#",
-          },
-        ],
-      },
-      {
-        title: "Cari Modülü",
-        url: "#",
-        items: [
-          {
-            title: "Cari Ekle",
-            url: "cariekle",
-          },
-          {
-            title: "Data Fetching",
-            url: "#",
-            isActive: true,
-          },
-          {
-            title: "Rendering",
-            url: "#",
-          },
-          {
-            title: "Caching",
-            url: "#",
-          },
-          {
-            title: "Styling",
-            url: "#",
-          },
-          {
-            title: "Optimizing",
-            url: "#",
-          },
-          {
-            title: "Configuring",
-            url: "#",
-          },
-          {
-            title: "Testing",
-            url: "#",
-          },
-          {
-            title: "Authentication",
-            url: "#",
-          },
-          {
-            title: "Deploying",
-            url: "#",
-          },
-          {
-            title: "Upgrading",
-            url: "#",
-          },
-          {
-            title: "Examples",
-            url: "#",
-          },
-        ],
-      },
-      {
-        title: "Kasa Modülü",
-        url: "#",
-        items: [
-          {
-            title: "Components",
-            url: "#",
-          },
-          {
-            title: "File Conventions",
-            url: "#",
-          },
-          {
-            title: "Functions",
-            url: "#",
-          },
-          {
-            title: "next.config.js Options",
-            url: "#",
-          },
-          {
-            title: "CLI",
-            url: "#",
-          },
-          {
-            title: "Edge Runtime",
-            url: "#",
-          },
-        ],
-      },
-      {
-        title: "Fatura Modülü",
-        url: "#",
-        items: [
-          {
-            title: "Accessibility",
-            url: "#",
-          },
-          {
-            title: "Fast Refresh",
-            url: "#",
-          },
-          {
-            title: "Next.js Compiler",
-            url: "#",
-          },
-          {
-            title: "Supported Browsers",
-            url: "#",
-          },
-          {
-            title: "Turbopack",
-            url: "#",
-          },
-        ],
-      },
-      {
-        title: "Ayarlar",
-        url: "#",
-        items: [
-          {
-            title: "Contribution Guide",
-            url: "#",
-          },
-        ],
-      },
-    ],
-  }
+    fetchProfile();
+  }, [accessToken, user, setUser]);
 
   return (
     <Sidebar {...props}>
@@ -216,7 +132,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <SidebarGroup>
           <SidebarMenu>
-            {data.navMain.map((item, index) => (
+            {navMain.map((item, index) => (
               <Collapsible
                 key={item.title}
                 defaultOpen={index === 1}
@@ -233,13 +149,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   {item.items?.length ? (
                     <CollapsibleContent>
                       <SidebarMenuSub>
-                        {item.items.map((item) => (
-                          <SidebarMenuSubItem key={item.title}>
+                        {item.items.map((subItem) => (
+                          <SidebarMenuSubItem key={subItem.title}>
                             <SidebarMenuSubButton
                               asChild
-                              isActive={item.isActive}
+                              isActive={subItem.isActive}
                             >
-                              <NavLink to={item.url}>{item.title}</NavLink>
+                              <NavLink to={subItem.url}>{subItem.title}</NavLink>
                             </SidebarMenuSubButton>
                           </SidebarMenuSubItem>
                         ))}
@@ -254,7 +170,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter>
         <div className="flex items-center gap-2 w-full">
-          <NavUser user={data.user} />
+          {user ? <NavUser user={{ name: user.username, email: user.email, avatar: "/avatars/logo.jpg" }} /> : <span>Kullanıcı Bilgisi Yükleniyor...</span>}
           <ThemeToggle />
         </div>
       </SidebarFooter>
