@@ -131,7 +131,7 @@ export function NavUser({
                   <span>Profil Ayarları</span>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
-              <DropdownMenuSeparator/>
+              <DropdownMenuSeparator />
               <DropdownMenuGroup>
                 <DropdownMenuItem>
                   <Sparkles />
@@ -147,7 +147,15 @@ export function NavUser({
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={logout} asChild>
+              <DropdownMenuItem
+                asChild
+                onClick={() => {
+                  localStorage.removeItem("accessToken");
+                  localStorage.removeItem("userEmail");
+                  localStorage.removeItem("userName");
+                  
+                }}
+              >
                 <NavLink to="/login">
                   <LogOut />
                   Log out

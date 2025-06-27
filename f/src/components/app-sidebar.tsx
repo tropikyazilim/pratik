@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 import { SearchForm } from "@/components/search-form"
 import { NavLink } from "react-router";
 import { NavUser } from "@/components/nav-user"
+import { ThemeToggle } from "@/components/theme-toggle"
 import {
   Collapsible,
   CollapsibleContent,
@@ -252,7 +253,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <div className="flex items-center gap-2 w-full">
+          <NavUser user={data.user} />
+          <ThemeToggle />
+        </div>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
