@@ -110,7 +110,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }, [accessToken, user, setUser]);
 
   return (
-    <Sidebar {...props}>
+    <Sidebar {...props} className="bg-sidebar border-r border-sidebar-border text-sidebar-foreground">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -129,7 +129,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
         <SearchForm />
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="bg-sidebar">
         <SidebarGroup>
           <SidebarMenu>
             {navMain.map((item, index) => (
@@ -140,8 +140,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               >
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
-                    <SidebarMenuButton>
-                      {item.title}{" "}
+                    <SidebarMenuButton className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+                      {item.title} {" "}
                       <Plus className="ml-auto group-data-[state=open]/collapsible:hidden" />
                       <Minus className="ml-auto group-data-[state=closed]/collapsible:hidden" />
                     </SidebarMenuButton>
@@ -153,7 +153,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                           <SidebarMenuSubItem key={subItem.title}>
                             <SidebarMenuSubButton
                               asChild
-                              isActive={subItem.isActive}
+                              className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                             >
                               <NavLink to={subItem.url}>{subItem.title}</NavLink>
                             </SidebarMenuSubButton>
@@ -168,7 +168,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="bg-sidebar border-t border-sidebar-border">
         <div className="flex items-center gap-2 w-full">
           {user ? <NavUser user={{ name: user.username, email: user.email, avatar: "/avatars/logo.jpg" }} /> : <span>Kullanıcı Bilgisi Yükleniyor...</span>}
           <ThemeToggle />

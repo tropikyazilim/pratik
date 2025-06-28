@@ -31,7 +31,7 @@ export default function Ana() {
             </BreadcrumbList>
           </Breadcrumb> */}
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-2 max-w-full overflow-x-hidden bg-background text-foreground">
+        <div className="flex flex-1 flex-col max-w-full overflow-x-hidden bg-background text-foreground">
           <Outlet />
         </div>
         

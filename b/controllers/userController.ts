@@ -10,19 +10,23 @@ const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || 'access_secret';
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || 'refresh_secret';
 
 export async function register(req: Request, res: Response) {
+  console.log("REGISTER FONKSİYONU ÇALIŞTI");
   const { email, username, password } = req.body;
   if (!email || !username || !password) {
+    console.log("Eksik alanlar, 400 dönülüyor");
     return res.status(400).json({ message: 'Tüm alanlar zorunlu.' });
   }
   try {
     const db = await getCustomDbConnection('tropik');
     if (!db) {
+      console.log("Veritabanı bağlantısı yok, 503 dönülüyor");
       return res.status(503).json({ message: 'Veritabanı bağlantısı yok.' });
     }
     // E-posta zaten var mı kontrol et
     const check = await db.query('SELECT id FROM users WHERE email = $1', [email]);
     if (check.rows.length > 0) {
       await db.end();
+      console.log("E-posta zaten var, 409 dönülüyor");
       return res.status(409).json({ message: 'Bu e-posta ile kayıtlı kullanıcı zaten var.' });
     }
     // Şifreyi hashle
@@ -34,9 +38,11 @@ export async function register(req: Request, res: Response) {
       [email, username, hashedPassword, now, now]
     );
     await db.end();
+    console.log("Kullanıcı başarıyla oluşturuldu, 201 dönülüyor");
     return res.status(201).json({ message: 'Kullanıcı başarıyla oluşturuldu.', user: result.rows[0] });
   } catch (err) {
     const error = err as Error;
+    console.log("Sunucu hatası, 500 dönülüyor", error.message);
     return res.status(500).json({ message: 'Sunucu hatası', error: error.message });
   }
 }
