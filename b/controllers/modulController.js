@@ -67,4 +67,4 @@ export async function updateModul(req, res) {
   } catch (error) {
     res.status(500).json({ message: "Modül güncellenemedi: " + error.message });
   }
-}
+} 

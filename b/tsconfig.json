@@ -13,7 +13,7 @@
     "resolveJsonModule": true,
     "allowJs": true
   },
-  "include": ["*.ts", "*.js", "**/*.ts", "**/*.js"],
+  "include": ["**/*.ts"],
   "exclude": ["node_modules", "dist"],
   "ts-node": {
     "esm": true,
