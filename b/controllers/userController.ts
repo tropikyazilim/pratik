@@ -132,4 +132,42 @@ export async function logout(req: Request, res: Response) {
     sameSite: 'strict',
   });
   res.json({ message: 'Çıkış başarılı' });
+}
+
+export async function refresh(req: Request, res: Response) {
+  const refreshToken = req.cookies?.refreshToken;
+  
+  if (!refreshToken) {
+    return res.status(401).json({ message: 'Refresh token bulunamadı' });
+  }
+
+  try {
+    // Refresh token'ı doğrula
+    const decoded = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET) as any;
+    
+    // Kullanıcının hala var olduğunu kontrol et
+    const db = await getCustomDbConnection('tropik');
+    if (!db) {
+      return res.status(503).json({ message: 'Veritabanı bağlantısı yok.' });
+    }
+    
+    const result = await db.query('SELECT id, email FROM users WHERE id = $1', [decoded.userId]);
+    await db.end();
+    
+    if (result.rows.length === 0) {
+      return res.status(401).json({ message: 'Kullanıcı bulunamadı' });
+    }
+
+    // Yeni access token oluştur
+    const newAccessToken = jwt.sign(
+      { userId: decoded.userId, email: decoded.email },
+      ACCESS_TOKEN_SECRET,
+      { expiresIn: '15m' }
+    );
+
+    res.json({ accessToken: newAccessToken });
+  } catch (err) {
+    console.error('Refresh token hatası:', err);
+    return res.status(401).json({ message: 'Geçersiz refresh token' });
+  }
 } 

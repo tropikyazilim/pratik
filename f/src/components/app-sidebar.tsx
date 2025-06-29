@@ -27,7 +27,7 @@ import {
 import { useAuth } from "@/context/auth-context";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { accessToken, user, setUser } = useAuth();
+  const { accessToken, user, setUser, authenticatedFetch } = useAuth();
 
   // Menü verisi sabit olarak tekrar eklendi
   const navMain = [
@@ -93,10 +93,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const fetchProfile = async () => {
       if (accessToken && !user) {
         try {
-          const res = await fetch("/api/profile", {
-            headers: { Authorization: `Bearer ${accessToken}` },
-            credentials: "include"
-          });
+          const res = await authenticatedFetch("/api/profile");
           if (res.ok) {
             const data = await res.json();
             setUser(data);
@@ -107,7 +104,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       }
     };
     fetchProfile();
-  }, [accessToken, user, setUser]);
+  }, [accessToken, user, setUser, authenticatedFetch]);
 
   return (
     <Sidebar {...props} className="bg-sidebar border-r border-sidebar-border text-sidebar-foreground">
