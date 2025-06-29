@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import { KullaniciEkle } from "./pages/Kullanicilar";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import Kitaplik from "./pages/Kitaplik";
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,7 @@ const router = createBrowserRouter([
           { path: "", element: <Dashboard /> },
           { path: "cariekle", element: <CariEkle /> },
           { path: "kullaniciekle", element: <KullaniciEkle /> },
+          { path: "kitaplik", element: <Kitaplik /> },
         ],
       },
     ],
