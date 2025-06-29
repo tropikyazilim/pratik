@@ -29,7 +29,6 @@ import { useAuth } from "@/context/auth-context";
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { accessToken, user, setUser, authenticatedFetch } = useAuth();
   const [filteredNavMain, setFilteredNavMain] = useState<any[]>([]);
-  const [searchQuery, setSearchQuery] = useState<string | null>(null);
   const [openSections, setOpenSections] = useState<Set<string>>(new Set(['Cari Modülü']));
 
   // Menü verisi sabit olarak tekrar eklendi
@@ -97,7 +96,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const handleSearch = (query: string) => {
     if (!query.trim()) {
       setFilteredNavMain(navMain);
-      setSearchQuery(null);
       setOpenSections(new Set(['Cari Modülü']));
       return;
     }
@@ -115,7 +113,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     }).filter(section => section.items.length > 0);
 
     setFilteredNavMain(filtered);
-    setSearchQuery(query);
     
     // Arama sonucunda eşleşen modülleri aç
     const sectionsToOpen = new Set<string>();
@@ -185,7 +182,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent className="bg-sidebar">
         <SidebarGroup>
           <SidebarMenu>
-            {filteredNavMain.map((item, index) => (
+            {filteredNavMain.map((item) => (
               <Collapsible
                 key={item.title}
                 open={openSections.has(item.title)}
