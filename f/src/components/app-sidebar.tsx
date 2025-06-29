@@ -1,5 +1,5 @@
 import * as React from "react"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { GalleryVerticalEnd, Minus, Plus } from "lucide-react"
 import { NavLink } from "react-router";
 import { NavUser } from "@/components/nav-user"
@@ -28,6 +28,9 @@ import { useAuth } from "@/context/auth-context";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { accessToken, user, setUser, authenticatedFetch } = useAuth();
+  const [filteredNavMain, setFilteredNavMain] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string | null>(null);
+  const [openSections, setOpenSections] = useState<Set<string>>(new Set(['Cari Modülü']));
 
   // Menü verisi sabit olarak tekrar eklendi
   const navMain = [
@@ -89,6 +92,58 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
   ];
 
+  // Arama işlevi
+  const handleSearch = (query: string) => {
+    if (!query.trim()) {
+      setFilteredNavMain(navMain);
+      setSearchQuery(null);
+      setOpenSections(new Set(['Cari Modülü']));
+      return;
+    }
+
+    const filtered = navMain.map(section => {
+      const filteredItems = section.items?.filter(item =>
+        item.title.toLowerCase().includes(query.toLowerCase()) ||
+        section.title.toLowerCase().includes(query.toLowerCase())
+      ) || [];
+
+      return {
+        ...section,
+        items: filteredItems
+      };
+    }).filter(section => section.items.length > 0);
+
+    setFilteredNavMain(filtered);
+    setSearchQuery(query);
+    
+    // Arama sonucunda eşleşen modülleri aç
+    const sectionsToOpen = new Set<string>();
+    filtered.forEach(section => {
+      if (section.items?.some((item: { title: string; url: string }) => 
+        item.title.toLowerCase().includes(query.toLowerCase()) ||
+        section.title.toLowerCase().includes(query.toLowerCase())
+      )) {
+        sectionsToOpen.add(section.title);
+      }
+    });
+    setOpenSections(sectionsToOpen);
+  };
+
+  const handleSectionToggle = (sectionTitle: string, isOpen: boolean) => {
+    const newOpenSections = new Set(openSections);
+    if (isOpen) {
+      newOpenSections.add(sectionTitle);
+    } else {
+      newOpenSections.delete(sectionTitle);
+    }
+    setOpenSections(newOpenSections);
+  };
+
+  useEffect(() => {
+    // İlk yüklemede tüm menüyü göster
+    setFilteredNavMain(navMain);
+  }, []);
+
   useEffect(() => {
     const fetchProfile = async () => {
       if (accessToken && !user) {
@@ -124,15 +179,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-        <SearchForm />
+        <SearchForm onSearch={handleSearch} />
       </SidebarHeader>
       <SidebarContent className="bg-sidebar">
         <SidebarGroup>
           <SidebarMenu>
-            {navMain.map((item, index) => (
+            {filteredNavMain.map((item, index) => (
               <Collapsible
                 key={item.title}
-                defaultOpen={index === 1}
+                open={openSections.has(item.title)}
+                onOpenChange={(isOpen) => handleSectionToggle(item.title, isOpen)}
                 className="group/collapsible"
               >
                 <SidebarMenuItem>
@@ -146,7 +202,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   {item.items?.length ? (
                     <CollapsibleContent>
                       <SidebarMenuSub>
-                        {item.items.map((subItem) => (
+                        {item.items.map((subItem: { title: string; url: string }) => (
                           <SidebarMenuSubItem key={subItem.title}>
                             <SidebarMenuSubButton
                               asChild
