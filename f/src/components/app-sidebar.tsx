@@ -1,6 +1,6 @@
 import * as React from "react"
 import { useEffect, useState } from "react"
-import { GalleryVerticalEnd, Minus, Plus, Home, Box, Users, Wallet, FileText, Settings } from "lucide-react"
+import { Minus, Plus, Home, Box, Users, Wallet, FileText, Settings } from "lucide-react"
 import { NavLink } from "react-router";
 import { NavUser } from "@/components/nav-user"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -20,7 +20,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
-  SidebarMenuSubButton,
   SidebarMenuSubItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
