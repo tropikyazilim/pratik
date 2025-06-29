@@ -1,6 +1,6 @@
 import * as React from "react"
 import { useEffect, useState } from "react"
-import { GalleryVerticalEnd, Minus, Plus } from "lucide-react"
+import { GalleryVerticalEnd, Minus, Plus, Home, Box, Users, Wallet, FileText, Settings } from "lucide-react"
 import { NavLink } from "react-router";
 import { NavUser } from "@/components/nav-user"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -33,13 +33,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   // Menü verisi sabit olarak tekrar eklendi
   const navMain = [
-    
+    {
+      title: "Ana Sayfa",
+      url: "/",
+      
+      
+    },
     {
       title: "Stok Modülü",
       url: "#",
       items: [
-        { title: "Installation", url: "#" },
-        { title: "Project Structure", url: "#" },
+        { title: "Installation", url: "a" },
+        { title: "Project Structure", url: "a" },
       ],
     },
     {
@@ -49,45 +54,45 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         { title: "Cari Ekle", url: "cariekle" },
         { title: "Kullanıcı Ekle", url: "kullaniciekle"},
         { title: "Kitaplık", url: "kitaplik" },
-        { title: "Caching", url: "#" },
-        { title: "Styling", url: "#" },
-        { title: "Optimizing", url: "#" },
-        { title: "Configuring", url: "#" },
-        { title: "Testing", url: "#" },
-        { title: "Authentication", url: "#" },
-        { title: "Deploying", url: "#" },
-        { title: "Upgrading", url: "#" },
-        { title: "Examples", url: "#" },
+        { title: "Caching", url: "a" },
+        { title: "Styling", url: "a" },
+        { title: "Optimizing", url: "a" },
+        { title: "Configuring", url: "a" },
+        { title: "Testing", url: "a" },
+        { title: "Authentication", url: "a" },
+        { title: "Deploying", url: "a" },
+        { title: "Upgrading", url: "a" },
+        { title: "Examples", url: "a" },
       ],
     },
     {
       title: "Kasa Modülü",
       url: "#",
       items: [
-        { title: "Components", url: "#" },
-        { title: "File Conventions", url: "#" },
-        { title: "Functions", url: "#" },
-        { title: "next.config.js Options", url: "#" },
-        { title: "CLI", url: "#" },
-        { title: "Edge Runtime", url: "#" },
+        { title: "Components", url: "a" },
+        { title: "File Conventions", url: "a" },
+        { title: "Functions", url: "a" },
+        { title: "next.config.js Options", url: "a" },
+        { title: "CLI", url: "a" },
+        { title: "Edge Runtime", url: "a" },
       ],
     },
     {
       title: "Fatura Modülü",
       url: "#",
       items: [
-        { title: "Accessibility", url: "#" },
-        { title: "Fast Refresh", url: "#" },
-        { title: "Next.js Compiler", url: "#" },
-        { title: "Supported Browsers", url: "#" },
-        { title: "Turbopack", url: "#" },
+        { title: "Accessibility", url: "a" },
+        { title: "Fast Refresh", url: "a" },
+        { title: "Next.js Compiler", url: "a" },
+        { title: "Supported Browsers", url: "a" },
+        { title: "Turbopack", url: "a" },
       ],
     },
     {
       title: "Ayarlar",
       url: "#",
       items: [
-        { title: "Contribution Guide", url: "#" },
+        { title: "Contribution Guide", url: "a" },
       ],
     },
   ];
@@ -166,12 +171,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <NavLink to="/">
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <GalleryVerticalEnd className="size-4" />
-                </div>
-                <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-medium">Tropik Yazılım</span>
-                  <span className="">v1.0.1</span>
+                <div className="flex items-center gap-2">
+                  <img src="/logotrans.png" alt="Tropik Yazılım Logo" className="w-10 h-10 rounded" />
+                  <div className="flex flex-col gap-0.5 leading-none">
+                    <span className="font-medium">Tropik Yazılım</span>
+                    <span className="">v1.0.1</span>
+                  </div>
                 </div>
               </NavLink>
             </SidebarMenuButton>
@@ -183,38 +188,65 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarGroup>
           <SidebarMenu>
             {filteredNavMain.map((item) => (
-              <Collapsible
-                key={item.title}
-                open={openSections.has(item.title)}
-                onOpenChange={(isOpen) => handleSectionToggle(item.title, isOpen)}
-                className="group/collapsible"
-              >
-                <SidebarMenuItem>
-                  <CollapsibleTrigger asChild>
-                    <SidebarMenuButton className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
-                      {item.title} {" "}
-                      <Plus className="ml-auto group-data-[state=open]/collapsible:hidden" />
-                      <Minus className="ml-auto group-data-[state=closed]/collapsible:hidden" />
-                    </SidebarMenuButton>
-                  </CollapsibleTrigger>
-                  {item.items?.length ? (
+              item.items && item.items.length > 0 ? (
+                <Collapsible
+                  key={item.title}
+                  open={openSections.has(item.title)}
+                  onOpenChange={(isOpen) => handleSectionToggle(item.title, isOpen)}
+                  className="group/collapsible"
+                >
+                  <SidebarMenuItem>
+                    <CollapsibleTrigger asChild>
+                      <SidebarMenuButton className="hover:bg-sidebar-accent hover:text-gray-900 text-gray-700">
+                        {item.title === "Stok Modülü" && <Box className="size-5 mr-2" />}
+                        {item.title === "Cari Modülü" && <Users className="size-5 mr-2" />}
+                        {item.title === "Kasa Modülü" && <Wallet className="size-5 mr-2" />}
+                        {item.title === "Fatura Modülü" && <FileText className="size-5 mr-2" />}
+                        {item.title === "Ayarlar" && <Settings className="size-5 mr-2" />}
+                        {item.title} {" "}
+                        <Plus className="ml-auto group-data-[state=open]/collapsible:hidden" />
+                        <Minus className="ml-auto group-data-[state=closed]/collapsible:hidden" />
+                      </SidebarMenuButton>
+                    </CollapsibleTrigger>
                     <CollapsibleContent>
                       <SidebarMenuSub>
                         {item.items.map((subItem: { title: string; url: string }) => (
                           <SidebarMenuSubItem key={subItem.title}>
-                            <SidebarMenuSubButton
-                              asChild
-                              className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                            <NavLink
+                              to={subItem.url}
+                              end
+                              className={({ isActive }) =>
+                                `flex items-center gap-2 rounded-md px-2 py-2 transition-colors w-full text-left text-sm font-medium outline-none
+                                text-gray-700 hover:text-gray-900
+                                ${isActive ? "bg-gradient-to-r from-green-400 to-green-500 text-white" : "hover:bg-sidebar-accent"}
+                                `
+                              }
                             >
-                              <NavLink to={subItem.url}>{subItem.title}</NavLink>
-                            </SidebarMenuSubButton>
+                              {subItem.title}
+                            </NavLink>
                           </SidebarMenuSubItem>
                         ))}
                       </SidebarMenuSub>
                     </CollapsibleContent>
-                  ) : null}
+                  </SidebarMenuItem>
+                </Collapsible>
+              ) : (
+                <SidebarMenuItem key={item.title}>
+                  <NavLink
+                    to={item.url || "/"}
+                    end
+                    className={({ isActive }) =>
+                      `flex items-center gap-2 rounded-md px-2 py-2 transition-colors w-full text-left text-sm font-medium outline-none
+                      text-gray-700 hover:text-gray-900
+                      ${isActive ? "bg-gradient-to-r from-green-400 to-green-500 text-white" : "hover:bg-sidebar-accent"}
+                      `
+                    }
+                  >
+                    {item.title === "Ana Sayfa" && <Home className="size-5 mr-2" />}
+                    {item.title}
+                  </NavLink>
                 </SidebarMenuItem>
-              </Collapsible>
+              )
             ))}
           </SidebarMenu>
         </SidebarGroup>
