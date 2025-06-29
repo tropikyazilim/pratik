@@ -34,6 +34,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   // Menü verisi sabit olarak tekrar eklendi
   const navMain = [
+    
     {
       title: "Stok Modülü",
       url: "#",
